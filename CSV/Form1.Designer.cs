@@ -30,7 +30,7 @@
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.lbChannels = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnOpen = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -52,6 +52,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.statusBar = new System.Windows.Forms.StatusStrip();
+            this.infoLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -60,10 +61,11 @@
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.lbStatistics = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -71,6 +73,7 @@
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.statusBar.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -98,7 +101,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.listBox1);
+            this.groupBox2.Controls.Add(this.lbChannels);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 60);
             this.groupBox2.Name = "groupBox2";
@@ -107,13 +110,13 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Channels";
             // 
-            // listBox1
+            // lbChannels
             // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.listBox1.ItemHeight = 15;
-            this.listBox1.Items.AddRange(new object[] {
+            this.lbChannels.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbChannels.FormattingEnabled = true;
+            this.lbChannels.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.lbChannels.ItemHeight = 15;
+            this.lbChannels.Items.AddRange(new object[] {
             "aaaaaaaaaaa",
             "bbbbbbbbb",
             "cccccccccc",
@@ -130,11 +133,11 @@
             "nnnnnnnnnnnnnnn",
             "ooooooooooooooo",
             "ppppppppppppppppp"});
-            this.listBox1.Location = new System.Drawing.Point(3, 19);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBox1.Size = new System.Drawing.Size(244, 516);
-            this.listBox1.TabIndex = 0;
+            this.lbChannels.Location = new System.Drawing.Point(3, 19);
+            this.lbChannels.Name = "lbChannels";
+            this.lbChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lbChannels.Size = new System.Drawing.Size(244, 516);
+            this.lbChannels.TabIndex = 0;
             // 
             // panel2
             // 
@@ -165,6 +168,7 @@
             this.btnClose.TabIndex = 1;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // groupBox4
             // 
@@ -349,11 +353,18 @@
             // 
             // statusBar
             // 
+            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.infoLabel});
             this.statusBar.Location = new System.Drawing.Point(0, 904);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(1539, 22);
             this.statusBar.TabIndex = 1;
-            this.statusBar.Text = "statusStrip1";
+            // 
+            // infoLabel
+            // 
+            this.infoLabel.Name = "infoLabel";
+            this.infoLabel.Size = new System.Drawing.Size(127, 17);
+            this.infoLabel.Text = "toolStripStatusLabel1";
             // 
             // groupBox7
             // 
@@ -432,7 +443,7 @@
             // 
             // groupBox10
             // 
-            this.groupBox10.Controls.Add(this.listBox2);
+            this.groupBox10.Controls.Add(this.lbStatistics);
             this.groupBox10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox10.Location = new System.Drawing.Point(0, 0);
             this.groupBox10.Name = "groupBox10";
@@ -441,22 +452,22 @@
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Statistics";
             // 
-            // listBox2
+            // lbStatistics
             // 
-            this.listBox2.BackColor = System.Drawing.SystemColors.Control;
-            this.listBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.ItemHeight = 15;
-            this.listBox2.Items.AddRange(new object[] {
+            this.lbStatistics.BackColor = System.Drawing.SystemColors.Control;
+            this.lbStatistics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbStatistics.FormattingEnabled = true;
+            this.lbStatistics.ItemHeight = 15;
+            this.lbStatistics.Items.AddRange(new object[] {
             "aaaaaaaaaaa",
             "bbbbbbbbb",
             "cccccccccc",
             "ddddddddddddd",
             "eeeeeeeeeeeee"});
-            this.listBox2.Location = new System.Drawing.Point(3, 19);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(1277, 426);
-            this.listBox2.TabIndex = 9;
+            this.lbStatistics.Location = new System.Drawing.Point(3, 19);
+            this.lbStatistics.Name = "lbStatistics";
+            this.lbStatistics.Size = new System.Drawing.Size(1277, 426);
+            this.lbStatistics.TabIndex = 9;
             // 
             // panel1
             // 
@@ -496,6 +507,10 @@
             this.splitContainer1.SplitterDistance = 452;
             this.splitContainer1.TabIndex = 7;
             // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -516,6 +531,8 @@
             this.groupBox5.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.statusBar.ResumeLayout(false);
+            this.statusBar.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -537,7 +554,7 @@
 
         private GroupBox groupBox1;
         private GroupBox groupBox2;
-        private ListBox listBox1;
+        private ListBox lbChannels;
         private Button btnClose;
         private Button btnOpen;
         private StatusStrip statusBar;
@@ -560,7 +577,7 @@
         private RadioButton radioButton2;
         private GroupBox groupBox7;
         private GroupBox groupBox10;
-        private ListBox listBox2;
+        private ListBox lbStatistics;
         private GroupBox groupBox8;
         private PictureBox pictureBox1;
         private GroupBox groupBox9;
@@ -571,5 +588,7 @@
         private Panel panel2;
         private Panel panel3;
         private SplitContainer splitContainer1;
+        private ToolStripStatusLabel infoLabel;
+        private OpenFileDialog openFileDialog;
     }
 }
