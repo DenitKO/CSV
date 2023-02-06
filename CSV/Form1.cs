@@ -1,14 +1,16 @@
-using System.Windows.Forms;
-using System.IO;
 using System.Text;
-using System.Runtime.ExceptionServices;
 
 namespace CSV
 {
     public partial class Form1 : Form
     {
+        private const string V = "";
+        public string first = V;
+        string[] firstVariables = new string[0];
         char _separators = '\0';
-        public string first = "";
+        string filename = "";
+        int percent = 0;
+        int maxPercent = 0;
         public Form1()
         {
             InitializeComponent();
@@ -25,6 +27,9 @@ namespace CSV
             PrintSeparator();
             lbChannels.Items.Clear();
             SplitIntoVariables();
+            FOpenFile fOpenFile = new FOpenFile();
+            fOpenFile.Show();
+            ReadFile3();
         }
 
         async void ReadFile()
@@ -33,36 +38,14 @@ namespace CSV
                 return;
             await Task.Run(async () =>
             {
-                // получаем выбранный файл
-                string filename = openFileDialog.FileName;
-                // читаем файл в строку
-                // string[] fileText = File.ReadAllLines(filename);
-
-
-                //using (var bufferedFileStream =
-                //       new BufferedStream(File.OpenRead(filename), 1024 * 1024)) // буфер в мегабайт
-                //{
-                //    bufferedFileStream.Read();
-                //}
-
-                // чтение из файла
                 using (FileStream fstream = File.OpenRead(filename))
                 {
-                    // выделяем массив для считывания данных из файла
                     byte[] buffer = new byte[fstream.Length];
-                    // считываем данные
                     await fstream.ReadAsync(buffer, 0, buffer.Length);
-                    // декодируем байты в строку
                     string textFromFile = Encoding.Default.GetString(buffer);
-                    string[] item = textFromFile.Split('\n');
+                    string[] item = textFromFile.Split(_separators);
                     lbStatistics.Items.AddRange(item);
                 }  
-                // добавление данных, построчно
-                // foreach (string line in textFromFile)
-                // {
-                //     lbStatistics.Items.Add(line);
-                // }
-                // Или красивее: lbStatistics.Items.AddRange(fileText);
             });
         }
 
@@ -80,43 +63,67 @@ namespace CSV
             });
         }
 
+        async void ReadFile3()
+        {
+            percent = 0;
+            await Task.Run(() =>
+            {
+                using(StreamReader stream = new StreamReader(filename))
+                {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.Append(stream.ReadToEnd());
+                    stringBuilder.Remove(0, first.Length+2);
+                    string[] line = stringBuilder.ToString().Split('\n');
+                    maxPercent = line.Length;
+                    foreach (string item in line)
+                    {
+                        // Добавить зависимость прогресс бара к загрузке файла
+                        // "C# Как управлять progressBar из другой формы?"
+                        // добавить переменные в коллекцию с учётом пропущенных элементов
+                        // гуглить обработка пропущенных значений c#
+                        // загуглить что такое LINQ
+                        percent++;
+                        lbStatistics.Items.Add(item.ReplaceWhiteSpaces());
+                        
+                    }
+                }
+            });
+        }
+
         void CheckFirstLine()
         {
             if (openFileDialog.ShowDialog() == DialogResult.Cancel)
                 return;
-            string filename = openFileDialog.FileName;
-            string[] readFile = File.ReadAllLines(filename);
-            string item = readFile[0];
-            lbStatistics.Items.Add(item);
-            first = item;
+            filename = openFileDialog.FileName;
+            string[] readFile = File.ReadAllLines(filename); //ИСПРАВИТЬ на считывание только первой строки
+            first = readFile[0];
         }
 
         void SplitIntoVariables()
         {
-            lbChannels.Items.AddRange(first.Split(_separators));
+            firstVariables = first.Split(_separators);
+            lbChannels.Items.AddRange(firstVariables);
         }
 
         void ChechSeparator()
         {
             char separator = '\0';
-            foreach (string item in lbStatistics.Items)
+            while (separator == '\0')
             {
-                int i = 0;
-                while (separator == '\0')
+                for (int i = 0; i < first.Length; i++)
                 {
-                    if (item[i] == ',')
+                    if (first[i] == ',')
                     {
                         separator = ',';
                     }
-                    else if (item[i] == ';')
+                    else if (first[i] == ';')
                     {
                         separator = ';';
                     }
-                    else if (item[i] == '\t')
+                    else if (first[i] == '\t')
                     {
                         separator = '\t';
                     }
-                   i++;
                 }
             }
             _separators = separator;
@@ -143,5 +150,13 @@ namespace CSV
             //btnClose.Enabled = false;
         }
     }
-    
+    public static class Extensions
+    {
+        public static string ReplaceWhiteSpaces(this string str)
+        {
+            char[] whitespace = new char[] { ' ', '\t', '\r', '\n' };
+            return String.Join(" ", str.Split(whitespace, StringSplitOptions.RemoveEmptyEntries));
+        }
+    }
+
 }
