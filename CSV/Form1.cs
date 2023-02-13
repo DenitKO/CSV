@@ -9,33 +9,47 @@ namespace CSV
         string[] firstVariables = new string[0];
         char _separators = '\0';
         string filename = "";
-        int percent = 0;
+        int parts = 0;
         int maxPercent = 0;
         public Form1()
         {
             InitializeComponent();
-            openFileDialog.Filter = "Text files(*.txt)|*.txt|All files(*.*)|*.*";
+            openFileDialog.Filter = "CSV files(*.csv)|*.csv|Text files(*.txt)|*.txt|All files(*.*)|*.*";
         }
         
         private void btnOpen_Click(object sender, EventArgs e)
         {
+            if (openFileDialog.ShowDialog() == DialogResult.Cancel)
+                return;
             infoLabel.Text = "Opening CSV file...";
             // очитска листбокса
             lbStatistics.Items.Clear();
             CheckFirstLine();
             ChechSeparator();
-            PrintSeparator();
+            // PrintSeparator();
             lbChannels.Items.Clear();
             SplitIntoVariables();
-            FOpenFile fOpenFile = new FOpenFile();
+            FOpenFile fOpenFile = new FOpenFile(this);
             fOpenFile.Show();
-            ReadFile3();
+            fOpenFile.labelOpenFileDirection.Text = filename;
+            ReadFile3(fOpenFile);
+        }
+        /// <summary>
+        /// Method needed to add variables from a file in line to dictionary
+        /// </summary>
+        /// <param name="numbers"></param>
+        void AddToDict(params int[] numbers)
+        {
+            int result = 0;
+            foreach (var n in numbers)
+            {
+                result += n;
+            }
+            Console.WriteLine(result);
         }
 
         async void ReadFile()
         {
-            if (openFileDialog.ShowDialog() == DialogResult.Cancel)
-                return;
             await Task.Run(async () =>
             {
                 using (FileStream fstream = File.OpenRead(filename))
@@ -51,8 +65,6 @@ namespace CSV
 
         async void ReadFile2()
         {
-            if (openFileDialog.ShowDialog() == DialogResult.Cancel)
-                return;
             string filename = openFileDialog.FileName;
             await Task.Run(() =>
             {
@@ -63,37 +75,47 @@ namespace CSV
             });
         }
 
-        async void ReadFile3()
+        async void ReadFile3(FOpenFile fOpenFile)
         {
-            percent = 0;
+            parts = 0;
             await Task.Run(() =>
             {
-                using(StreamReader stream = new StreamReader(filename))
-                {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.Append(stream.ReadToEnd());
-                    stringBuilder.Remove(0, first.Length+2);
-                    string[] line = stringBuilder.ToString().Split('\n');
-                    maxPercent = line.Length;
-                    foreach (string item in line)
+                while (OpeningFile()){
+                    using (StreamReader stream = new StreamReader(filename))
                     {
-                        // Добавить зависимость прогресс бара к загрузке файла
-                        // "C# Как управлять progressBar из другой формы?"
-                        // добавить переменные в коллекцию с учётом пропущенных элементов
-                        // гуглить обработка пропущенных значений c#
-                        // загуглить что такое LINQ
-                        percent++;
-                        lbStatistics.Items.Add(item.ReplaceWhiteSpaces());
-                        
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.Append(stream.ReadToEnd());
+                        stringBuilder.Remove(0, first.Length + 2); // deletes empty char after clipping the first row with variables
+                        string[] line = stringBuilder.ToString().Split('\n');
+                        maxPercent = line.Length;
+                        fOpenFile.progBarOpening.Maximum = maxPercent;
+                        foreach (string item in line)
+                        {
+                            // добавить переменные в коллекцию с учётом пропущенных элементов
+                            // гуглить обработка пропущенных значений c#
+                            // загуглить что такое LINQ
+
+                            parts++;
+                            fOpenFile.gbProgressBar.Text = $"Загружено: {(parts * 100 / maxPercent).ToString("#.#")} %";
+                            fOpenFile.progBarOpening.Value = parts;
+                            label3.Text = parts.ToString();
+                            lbStatistics.Items.Add(item.ReplaceWhiteSpaces());
+                        }
                     }
                 }
             });
         }
 
+        public bool OpeningFile(bool working = true)
+        {
+            if (working == true)
+                return true;
+            else if (working == false);
+                return false;
+        }
+
         void CheckFirstLine()
         {
-            if (openFileDialog.ShowDialog() == DialogResult.Cancel)
-                return;
             filename = openFileDialog.FileName;
             string[] readFile = File.ReadAllLines(filename); //ИСПРАВИТЬ на считывание только первой строки
             first = readFile[0];
@@ -144,9 +166,9 @@ namespace CSV
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            // Закрытие формы
+            // close the form
             this.Close();
-            // деактивация кнопки
+            // deactivate buttons
             //btnClose.Enabled = false;
         }
     }
@@ -154,7 +176,7 @@ namespace CSV
     {
         public static string ReplaceWhiteSpaces(this string str)
         {
-            char[] whitespace = new char[] { ' ', '\t', '\r', '\n' };
+            char[] whitespace = new char[] { ' ', '\r', '\n' };
             return String.Join(" ", str.Split(whitespace, StringSplitOptions.RemoveEmptyEntries));
         }
     }

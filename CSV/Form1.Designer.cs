@@ -66,6 +66,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -400,6 +401,7 @@
             // 
             // groupBox9
             // 
+            this.groupBox9.Controls.Add(this.label3);
             this.groupBox9.Controls.Add(this.checkBox4);
             this.groupBox9.Controls.Add(this.checkBox3);
             this.groupBox9.Controls.Add(this.checkBox2);
@@ -511,6 +513,15 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(261, 26);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(40, 15);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "label3";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -590,5 +601,6 @@
         private SplitContainer splitContainer1;
         private ToolStripStatusLabel infoLabel;
         private OpenFileDialog openFileDialog;
+        private Label label3;
     }
 }

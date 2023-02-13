@@ -12,9 +12,17 @@ namespace CSV
 {
     public partial class FOpenFile : Form
     {
-        public FOpenFile()
+        readonly Form1 form1;
+        public FOpenFile(Form1 owner)
         {
+            form1 = owner;
             InitializeComponent();
+        }
+
+        private void btnCancelOpeningFile_Click(object sender, EventArgs e)
+        {
+            form1.OpeningFile(false);
+            this.Close();
         }
     }
 }
