@@ -21,7 +21,7 @@ namespace CSV
 
         private void btnCancelOpeningFile_Click(object sender, EventArgs e)
         {
-            form1.OpeningFile(false);
+            form1._stopOpeningFile = true;
             this.Close();
         }
     }
