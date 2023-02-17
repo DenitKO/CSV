@@ -158,7 +158,7 @@
             this.btnOpen.TabIndex = 0;
             this.btnOpen.Text = "Open";
             this.btnOpen.UseVisualStyleBackColor = true;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            this.btnOpen.Click += new System.EventHandler(this.BtnOpen_Click);
             // 
             // btnClose
             // 
@@ -169,7 +169,7 @@
             this.btnClose.TabIndex = 1;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // groupBox4
             // 
