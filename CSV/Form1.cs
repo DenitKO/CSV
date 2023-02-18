@@ -41,8 +41,8 @@ namespace CSV
             FOpenFile fOpenFile = new(this);
             fOpenFile.Show();
             fOpenFile.labelOpenFileDirection.Text = filename;
-            //ReadFileAsync(fOpenFile);
-            ReadFile(fOpenFile);
+            ReadFileAsync(fOpenFile);
+            //ReadFile(fOpenFile);
             ReturnVariables();
         }
 
@@ -72,6 +72,7 @@ namespace CSV
             _stopOpeningFile = false;
             counterOfReadedLines = 0;
             firstVar = true;
+            counterOfNaN = 0;
             variables.Clear();
 
             await Task.Run(() =>
@@ -100,6 +101,7 @@ namespace CSV
             _stopOpeningFile = false;
             counterOfReadedLines = 0;
             firstVar = true;
+            counterOfNaN = 0;
             variables.Clear();
 
             using (StreamReader stream = new(filename))
@@ -123,7 +125,6 @@ namespace CSV
         { 
             string variablesInLine = "";
             string[] someStr = Array.Empty<string>();
-            counterOfNaN = 0;
 
             counterOfReadedLines++;
             fOpenFile.gbProgressBar.Text = $"Download: {counterOfReadedLines * 100 / countOfLinesInFile:#.#} %";
@@ -143,32 +144,63 @@ namespace CSV
                 }
                 for (int i = 0; i < firstVariables.Length; i++)
                 {
-                    variables.Add(firstVariables[i], AddToDict(Convert.ToDouble(someStr[i])));
+                    if (Double.TryParse(someStr[i], out double someDouble))
+                    {
+                        variables.Add(firstVariables[i], AddToDict(Convert.ToDouble(someDouble)));
+                    }
+                    else
+                    {
+                        variables.Add(firstVariables[i], AddToDict(double.NaN));
+                        counterOfNaN++;
+                    }
+                    
                 }
             }
             else
             {
                 someStr = variablesInLine.Split(_separators);
-                for (int i = 0; i < someStr.Length; i++)
+                for (int i = 0; i < firstVariables.Length; i++)
                 {
-                    someStr[i] = someStr[i].Replace('.', ',');
-                    if (Double.TryParse(someStr[i], out double someDouble))
+                    if (someStr.Length < firstVariables.Length)
                     {
-                        variables[firstVariables[i]].Add(someDouble);
+                        while (i < someStr.Length)
+                        {
+                            someStr[i] = someStr[i].Replace('.', ',');
+                            if (Double.TryParse(someStr[i], out double someDouble))
+                            {
+                                variables[firstVariables[i]].Add(someDouble);
+                            }
+                            else
+                            {
+                                variables[firstVariables[i]].Add(double.NaN);
+                                counterOfNaN++;
+                            }
+                            i++;
+                        }
+                        variables[firstVariables[i]].Add(double.NaN);
+                        counterOfNaN++;
                     }
                     else
                     {
-                        variables[firstVariables[i]].Add(double.NaN);
-                        counterOfNaN++;
+                        while (i < firstVariables.Length)
+                        {
+                            someStr[i] = someStr[i].Replace('.', ',');
+                            if (Double.TryParse(someStr[i], out double someDouble))
+                            {
+                                variables[firstVariables[i]].Add(someDouble);
+                            }
+                            else
+                            {
+                                variables[firstVariables[i]].Add(double.NaN);
+                                counterOfNaN++;
+                            }
+                            i++;
+                        }
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Method needed to add variables from a file in line to dictionary
-        /// </summary>
-        /// <param name="numbers"></param>
         static List<double> AddToDict(double number)
         {
             List<double> numbers = new()
